@@ -18,7 +18,8 @@ public class UpdateNodeStatusAConsumer {
     @Autowired
     private AllOrderStatusService allOrderStatusService;
 
-    @KafkaListener(topics = "#{T(com.johnie.kafkademo.kafka.config.KafkaTopicConstant).UPDATE_NODE_A_STATUS}", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "#{T(com.johnie.kafkademo.kafka.config.KafkaTopicConstant).UPDATE_NODE_A_STATUS}",
+            containerFactory = "kafkaListenerContainerFactory")
     public void listenOnOrderA(String orderNo) {
         OrderA orderA = ObjectRedisUtil.get(orderNo + "$$" + KafkaTopicConstant.UPDATE_NODE_A_STATUS);
         // 更新消息逻辑
@@ -27,8 +28,10 @@ public class UpdateNodeStatusAConsumer {
         allOrderStatusService.updateNodeAStatus(orderNo, status);
     }
 
-    @KafkaListener(topics = "#{T(com.johnie.kafkademo.kafka.config.KafkaTopicConstant).UPDATE_NODE_B_STATUS}", containerFactory = "kafkaListenerContainerFactory2")
-    public void listenOnOrderA(DomainEvent event) {
+    @KafkaListener(topics = "#{T(com.johnie.kafkademo.kafka.config.KafkaTopicConstant).UPDATE_NODE_B_STATUS}",
+            containerFactory = "kafkaListenerContainerFactory2",
+            groupId = KafkaTopicConstant.UPDATE_NODE_B_STATUS + "-" + "#{T(java.util.UUID).randomUUID()})")
+    public void listenOnOrderA1(DomainEvent event) {
         OrderA orderA = ObjectRedisUtil.get(event.getEventId());
         if (event.getEventType().contains("add")) {
             // 判断状态逻辑
@@ -46,4 +49,27 @@ public class UpdateNodeStatusAConsumer {
             allOrderStatusService.updateNodeAStatus(orderA.getNo(), status);
         }
     }
+
+    @KafkaListener(topics = "#{T(com.johnie.kafkademo.kafka.config.KafkaTopicConstant).UPDATE_NODE_B_STATUS}",
+            containerFactory = "kafkaListenerContainerFactory2",
+            groupId = KafkaTopicConstant.UPDATE_NODE_B_STATUS + "-" + "#{T(java.util.UUID).randomUUID()})")
+    public void listenOnOrderA2(DomainEvent event) {
+        OrderA orderA = ObjectRedisUtil.get(event.getEventId());
+        if (event.getEventType().contains("add")) {
+            // 判断状态逻辑
+            OrderStatus status = OrderStatus.STATUS_TWO;
+            allOrderStatusService.updateNodeAStatus(orderA.getNo(), status);
+        }
+        if (event.getEventType().contains("update")) {
+            // 判断状态逻辑
+            OrderStatus status = OrderStatus.STATUS_THREE;
+            allOrderStatusService.updateNodeAStatus(orderA.getNo(), status);
+        }
+        if (event.getEventType().contains("delete")) {
+            // 判断状态逻辑
+            OrderStatus status = OrderStatus.STATUS_ONE;
+            allOrderStatusService.updateNodeAStatus(orderA.getNo(), status);
+        }
+    }
+
 }
