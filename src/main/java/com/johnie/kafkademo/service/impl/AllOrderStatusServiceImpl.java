@@ -1,6 +1,7 @@
 package com.johnie.kafkademo.service.impl;
 
 import com.johnie.kafkademo.entity.AllOrderStatus;
+import com.johnie.kafkademo.entity.OrderA;
 import com.johnie.kafkademo.enums.OrderStatus;
 import com.johnie.kafkademo.repository.AllOrderStatusRepo;
 import com.johnie.kafkademo.service.AllOrderStatusService;

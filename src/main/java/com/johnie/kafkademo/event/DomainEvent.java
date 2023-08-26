@@ -1,31 +1,43 @@
 package com.johnie.kafkademo.event;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-public abstract class DomainEvent implements Serializable {
-    private String eventId;
-    private String tenantId;
-    private Date occurredOn;
+public class DomainEvent implements Serializable {
+    private String id;
     private String eventType;
+    private String tenantId;
+    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+    private Object body;
+    private long contentSize;
 
     public DomainEvent() {
     }
 
-    public DomainEvent(String tenantId, String eventType) {
-        this.tenantId = tenantId;
+    public DomainEvent(String eventType, Object body) {
+        this.id = UUID.randomUUID().toString();
+        this.tenantId = "johnie";
         this.eventType = eventType;
-        this.setOccurredOn(new Date());
-        this.eventId = eventType + "-" + UUID.randomUUID();
+        this.body = body;
     }
 
-    public String getEventId() {
-        return eventId;
+    public String getId() {
+        return id;
     }
 
-    public void setEventId(String eventId) {
-        this.eventId = eventId;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getEventType() {
+        return eventType;
+    }
+
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     public String getTenantId() {
@@ -36,19 +48,19 @@ public abstract class DomainEvent implements Serializable {
         this.tenantId = tenantId;
     }
 
-    public Date getOccurredOn() {
-        return occurredOn;
+    public Object getBody() {
+        return body;
     }
 
-    public void setOccurredOn(Date occurredOn) {
-        this.occurredOn = occurredOn;
+    public void setBody(Object body) {
+        this.body = body;
     }
 
-    public String getEventType() {
-        return eventType;
+    public long getContentSize() {
+        return contentSize;
     }
 
-    public void setEventType(String eventType) {
-        this.eventType = eventType;
+    public void setContentSize(long contentSize) {
+        this.contentSize = contentSize;
     }
 }

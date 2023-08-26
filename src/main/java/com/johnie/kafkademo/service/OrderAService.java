@@ -10,4 +10,6 @@ public interface OrderAService {
     OrderA update(OrderA orderA);
 
     void delete(Long id);
+
+    OrderA findById(Long id);
 }

@@ -32,6 +32,11 @@ public class ObjectRedisUtil {
         getRedisTemplate().expire(key, timeout, TimeUnit.MINUTES);
     }
 
+    public static void set(String key, Object object, long timeout, TimeUnit timeUnit) {
+        getRedisTemplate().opsForValue().set(key, object);
+        getRedisTemplate().expire(key, timeout, timeUnit);
+    }
+
     public static <T> T get(String key) {
         return (T) getRedisTemplate().opsForValue().get(key);
     }

@@ -5,7 +5,7 @@ public final class KafkaTopicConstant {
         throw new IllegalStateException("Utility class");
     }
 
-    public static final String UPDATE_NODE_A_STATUS = "update_node_a_status_r1_p1";
-    public static final String UPDATE_NODE_B_STATUS = "update_node_b_status_r1_p1";
-    public static final String UPDATE_NODE_C_STATUS = "update_node_c_status_r1_p1";
+
+    public static final String ADD_ORDER_A = "add_order_a_r1_p1";
+    public static final String UPDATE_ORDER_A = "update_order_a_r1_p1";
 }
