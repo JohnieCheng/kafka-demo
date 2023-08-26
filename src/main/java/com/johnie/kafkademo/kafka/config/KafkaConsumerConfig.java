@@ -2,17 +2,24 @@ package com.johnie.kafkademo.kafka.config;
 
 import com.johnie.kafkademo.event.DomainEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.retrytopic.RetryTopicConfiguration;
+import org.springframework.kafka.retrytopic.RetryTopicConfigurationBuilder;
+import org.springframework.kafka.support.EndpointHandlerMethod;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.johnie.kafkademo.kafka.config.KafkaTopicConstant.getTopicNames;
 
 @Configuration
 public class KafkaConsumerConfig {
@@ -32,8 +39,6 @@ public class KafkaConsumerConfig {
     public ConcurrentKafkaListenerContainerFactory<String, DomainEvent> kafkaListenerContainerFactory2() {
         ConcurrentKafkaListenerContainerFactory<String, DomainEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory2());
-        // 配置多线程消费,消费监听逻辑要保证线程安全
-        factory.setConcurrency(3);
         factory.getContainerProperties().setPollTimeout(3000);
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
         return factory;
@@ -75,6 +80,18 @@ public class KafkaConsumerConfig {
         properties.put(JsonDeserializer.TRUSTED_PACKAGES, "com.johnie.kafkademo.event");
 
         return properties;
+    }
+
+
+    @Bean
+    public RetryTopicConfiguration retryTopic(@Qualifier("kafkaTemplate2") KafkaTemplate<?, ?> template) {
+        return RetryTopicConfigurationBuilder
+                .newInstance()
+                .maxAttempts(3)
+                .fixedBackOff(5000)
+                .includeTopics(getTopicNames())
+                .dltHandlerMethod(new EndpointHandlerMethod(KafkaErrorHandler.class, "dltHandler"))
+                .create(template);
     }
 
 }

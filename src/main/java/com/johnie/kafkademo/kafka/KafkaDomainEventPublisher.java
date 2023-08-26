@@ -62,6 +62,5 @@ public class KafkaDomainEventPublisher {
         ObjectRedisUtil.set(event.getId(), event.getBody(), 5);
         event.setBody(null);
         this.simplePublish(topic, event);
-        log.info("发送一条消息,topic:{},message:{}", topic, event.getId());
     }
 }
